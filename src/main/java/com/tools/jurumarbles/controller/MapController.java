@@ -1,12 +1,15 @@
 package com.tools.jurumarbles.controller;
 
 import com.tools.jurumarbles.model.MapEntity;
+
 import com.tools.jurumarbles.service.MapService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
-@RequestMapping("/api/maps")
+@RequestMapping("/api/v1/maps")
 public class MapController {
     @Autowired
     private MapService service;
@@ -35,4 +38,5 @@ public class MapController {
     public void delete(@PathVariable int id) {
         service.deleteMap(id);
     }
+
 }

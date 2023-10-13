@@ -9,7 +9,6 @@ public class MapEntity {
     @Id
     private int id;
     private String name;
-    private String description;
 
     public String getName() {
         return name;
@@ -23,11 +22,5 @@ public class MapEntity {
     }
     public void setId(int id) {
         this.id = id;
-    }
-    public String getDescription(){
-        return description;
-    }
-    public void setDescription(String description){
-        this.description = description;
     }
 }
