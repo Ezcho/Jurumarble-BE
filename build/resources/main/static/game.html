@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<!-- Input for game creation -->
+<h3>Start Game</h3>
+<form id="start-game-form">
+    Game ID: <input type="text" id="game-id-start"><br>
+    Team Count: <input type="text" id="team-count"><br>
+    <button type="button" onclick="startGame()">Start Game</button>
+</form>
+
+<!-- Input for team updates -->
+<h3>Update Team</h3>
+<form id="team-update-form">
+    Game ID: <input type="text" id="game-id-update" disabled><br>
+    Name: <textarea id="team-name"></textarea><br>
+    Position: <textarea id="team-position"></textarea><br>
+    <button type="button" onclick="updateTeam()">Update Team</button>
+</form>
+
+<!-- Delete game -->
+<button onclick="deleteGame()">Delete Game</button>
+
+<script>
+    function startGame() {
+        const gameId = $('#game-id-start').val();
+        const teamCount = $('#team-count').val();
+
+        $.post("/api/v1/status/start", {
+            gameId: gameId,
+            // Other fields can be added as per requirement
+        }, function (data) {
+            $('#game-id-update').val(data.gameId);  // Set the game ID for the update form
+            alert('Game started!');
+        });
+    }
+
+    function updateTeam() {
+        const gameId = $('#game-id-update').val();
+        const name = $('#team-name').val();
+        const position = $('#team-position').val();
+
+        $.ajax({
+            url: "/api/v1/status/" + gameId,
+            type: 'PUT',
+            data: JSON.stringify({
+                // assuming the team object structure here
+                name: name,
+                position: position
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+                alert('Team updated!');
+            }
+        });
+    }
+
+    function deleteGame() {
+        $.post("/api/v1/status/end", {}, function () {
+            alert('Game deleted based on client IP!');
+        });
+    }
+</script>
+
+</body>
+</html>

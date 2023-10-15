@@ -1,18 +1,20 @@
 package com.tools.jurumarbles.model;
-
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "status")
 public class GameEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer gameId;
     private String clientIp;
-    private Integer team;
-    private Integer position;
     private Integer stack;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TeamEntity> teams;
+
+    // Getter 및 Setter 메서드
 
     public Integer getGameId() {
         return gameId;
@@ -30,27 +32,22 @@ public class GameEntity {
         this.clientIp = clientIp;
     }
 
-    public Integer getTeam() {
-        return team;
-    }
-
-    public void setTeam(Integer team) {
-        this.team = team;
-    }
-
-    public Integer getPosition() {
-        return position;
-    }
-
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
     public Integer getStack() {
         return stack;
     }
 
     public void setStack(Integer stack) {
         this.stack = stack;
+    }
+
+    public List<TeamEntity> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<TeamEntity> teams) {
+        this.teams = teams;
+        for (TeamEntity team : teams) {
+            team.setGame(this);
+        }
     }
 }
