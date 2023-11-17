@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>CRUD간단하게 구현</title>
 </head>
 <body>
 
 <h2>Maps CRUD</h2>
-
 <form id="create-form">
   <h3>Create Map</h3>
   ID: <input type="text" id="map-id"><br>
   Name: <input type="text" id="map-name"><br><br>
   <input type="submit" value="Create">
 </form>
-
 <br>
 
-<!-- Update Form -->
 <form id="update-form">
   <h3>맵 업뎃</h3>
   ID: <input type="number" id="update-id"><br>
   Name: <input type="text" id="update-name"><br><br>
   <input type="submit" value="Update">
 </form>
-
 <br>
 
 <form id="delete-form">
@@ -31,14 +28,12 @@
   ID: <input type="number" id="delete-id"><br><br>
   <input type="submit" value="Delete">
 </form>
-
 <br>
 
 <button onclick="getAllMaps()">DB다시로드</button>
 <div id="maps-list"></div>
 
 <br>
-
 <h2>겜 CRUD</h2>
 <form id="start-game-form">
   Stack: <input type="number" id="game-stack-start"><br>
@@ -60,7 +55,6 @@
     try {
       let response = await fetch("/api/v1/maps");
       let data = await response.json();
-
       let html = '';
       data.forEach(map => {
         html += 'ID: ' + map.id + ', Name: ' + map.name + '<br>';
@@ -126,18 +120,25 @@
   async function startGame() {
     const stackValue = document.querySelector('#game-stack-start').value;
     try {
-      let response = await fetch("/api/v1/status/start", {
+      // 첫 번째 API 호출: 게임 시작 및 gameId 획득
+      let startResponse = await fetch("/api/v1/status/start", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({stack: stackValue}) // Use the stack value from the form
+        body: JSON.stringify({ stack: stackValue })
       });
-      let data = await response.json();
-      document.querySelector('#game-id-update').value = data.gameId;  // Set the game ID for the update form
+      let startData = await startResponse.json();
+      let gameId = startData.gameId;
+      document.querySelector('#game-id-update').value = gameId;
       alert('Game started!');
+
+      await fetch(`/api/gameMap/${gameId}`, {
+        method: 'POST'
+      });
+
     } catch (error) {
-      console.error("Error starting game:", error);
+      console.error("Error in game operation:", error);
     }
   }
 
@@ -148,17 +149,13 @@
     const position = document.querySelector('#team-position').value;
 
     try {
-      // 먼저 기존의 게임 정보를 가져옵니다.
       let response = await fetch("/api/v1/status/" + gameId);
       let gameData = await response.json();
-
-      // 새로운 팀 정보를 추가합니다.
       gameData.teams.push({
         name: name,
         position: position
       });
 
-      // 업데이트 요청을 보냅니다.
       await fetch("/api/v1/status/" + gameId, {
         method: 'PUT',
         headers: {
@@ -173,7 +170,6 @@
     }
   }
 
-
   async function deleteGame() {
     try {
       await fetch("/api/v1/status/end", {
@@ -186,7 +182,6 @@
   }
 
   getAllMaps();
-
 </script>
 </body>
 </html>

@@ -38,5 +38,4 @@ public class MapController {
     public void delete(@PathVariable int id) {
         service.deleteMap(id);
     }
-
 }

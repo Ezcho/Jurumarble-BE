@@ -33,7 +33,6 @@ public class GameController {
     public GameEntity updateGame(@PathVariable int id, @RequestBody GameEntity game) {
         return service.updateGame(id, game);
     }
-
     @DeleteMapping("/{id}")
     public void deleteGame(@PathVariable int id) {
         service.deleteGame(id);
@@ -57,7 +56,6 @@ public class GameController {
             teams.add(teamInfo);
         }
         response.put("team", teams);
-
         return response;
     }
 
@@ -66,5 +64,4 @@ public class GameController {
         String clientIp = request.getRemoteAddr();
         service.deleteByClientIp(clientIp);
     }
-
 }

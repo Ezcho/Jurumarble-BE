@@ -14,8 +14,6 @@ public class GameEntity {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TeamEntity> teams;
 
-    // Getter 및 Setter 메서드
-
     public Integer getGameId() {
         return gameId;
     }
@@ -50,4 +48,5 @@ public class GameEntity {
             team.setGame(this);
         }
     }
+
 }

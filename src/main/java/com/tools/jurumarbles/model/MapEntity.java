@@ -9,7 +9,6 @@ public class MapEntity {
     @Id
     private int id;
     private String name;
-
     public String getName() {
         return name;
     }
