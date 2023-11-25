@@ -28,6 +28,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
 	implementation 'org.thymeleaf:thymeleaf-spring5'	//thymeleaf -> .html 파일 요소 controller에서 리딩할때
 	implementation 'mysql:mysql-connector-java:8.0.33'    //mysql
 
