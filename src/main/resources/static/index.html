@@ -5,34 +5,6 @@
   <title>CRUD간단하게 구현</title>
 </head>
 <body>
-
-<h2>Maps CRUD</h2>
-<form id="create-form">
-  <h3>Create Map</h3>
-  ID: <input type="text" id="map-id"><br>
-  Name: <input type="text" id="map-name"><br><br>
-  <input type="submit" value="Create">
-</form>
-<br>
-
-<form id="update-form">
-  <h3>맵 업뎃</h3>
-  ID: <input type="number" id="update-id"><br>
-  Name: <input type="text" id="update-name"><br><br>
-  <input type="submit" value="Update">
-</form>
-<br>
-
-<form id="delete-form">
-  <h3>맵제거</h3>
-  ID: <input type="number" id="delete-id"><br><br>
-  <input type="submit" value="Delete">
-</form>
-<br>
-
-<button onclick="getAllMaps()">DB다시로드</button>
-<div id="maps-list"></div>
-
 <br>
 <h2>겜 CRUD</h2>
 <form id="start-game-form">
@@ -51,76 +23,9 @@
 
 <button onclick="deleteGame()">해당 ip에 해당되는 팀 제거</button>
 <script>
-  async function getAllMaps() {
-    try {
-      let response = await fetch("/api/v1/maps");
-      let data = await response.json();
-      let html = '';
-      data.forEach(map => {
-        html += 'ID: ' + map.id + ', Name: ' + map.name + '<br>';
-      });
-      document.querySelector('#maps-list').innerHTML = html;
-    } catch (error) {
-      console.error("Error fetching maps:", error);
-    }
-  }
-
-  document.querySelector("#create-form").addEventListener('submit', async function(e) {
-    e.preventDefault();
-    let id = document.querySelector("#map-id").value;
-    let name = document.querySelector("#map-name").value;
-    try {
-      await fetch("/api/v1/maps", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({id: id, name: name})
-      });
-      alert('Map created!');
-      await getAllMaps();
-    } catch (error) {
-      console.error("Error creating map:", error);
-    }
-  });
-
-  document.querySelector("#update-form").addEventListener('submit', async function(e) {
-    e.preventDefault();
-    let id = document.querySelector("#update-id").value;
-    let name = document.querySelector("#update-name").value;
-    try {
-      await fetch("/api/v1/maps/" + id, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({name: name})
-      });
-      alert('Map updated!');
-      await getAllMaps();
-    } catch (error) {
-      console.error("Error updating map:", error);
-    }
-  });
-
-  document.querySelector("#delete-form").addEventListener('submit', async function(e) {
-    e.preventDefault();
-    let id = document.querySelector("#delete-id").value;
-    try {
-      await fetch("/api/v1/maps/" + id, {
-        method: 'DELETE'
-      });
-      alert('Map deleted!');
-      await getAllMaps();
-    } catch (error) {
-      console.error("Error deleting map:", error);
-    }
-  });
-
   async function startGame() {
     const stackValue = document.querySelector('#game-stack-start').value;
     try {
-      // 첫 번째 API 호출: 게임 시작 및 gameId 획득
       let startResponse = await fetch("/api/v1/status/start", {
         method: 'POST',
         headers: {
@@ -132,22 +37,17 @@
       let gameId = startData.gameId;
       document.querySelector('#game-id-update').value = gameId;
       alert('Game started!');
-
       await fetch(`/api/gameMap/${gameId}`, {
         method: 'POST'
       });
-
     } catch (error) {
-      console.error("Error in game operation:", error);
+      console.error("게임 생성 실패:", error);
     }
   }
-
-
   async function updateTeam() {
     const gameId = document.querySelector('#game-id-update').value;
     const name = document.querySelector('#team-name').value;
     const position = document.querySelector('#team-position').value;
-
     try {
       let response = await fetch("/api/v1/status/" + gameId);
       let gameData = await response.json();
@@ -155,7 +55,6 @@
         name: name,
         position: position
       });
-
       await fetch("/api/v1/status/" + gameId, {
         method: 'PUT',
         headers: {
@@ -163,13 +62,11 @@
         },
         body: JSON.stringify(gameData)
       });
-
       alert('Team updated!');
     } catch (error) {
       console.error("Error updating team:", error);
     }
   }
-
   async function deleteGame() {
     try {
       await fetch("/api/v1/status/end", {
@@ -180,7 +77,6 @@
       console.error("Error deleting game:", error);
     }
   }
-
   getAllMaps();
 </script>
 </body>

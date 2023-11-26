@@ -22,21 +22,17 @@ public class GoldController {
     public String getRandomGold(Model model) {
         // Get all entities from the table
         List<GoldEntity> allEntities = goldRepository.findAll();
-
         // Check if there are entities in the table
         if(allEntities.isEmpty()) {
             model.addAttribute("errorMessage", "No entities found in the 'gold_entity'");
         } else {
             // Get a random index
             int randomIndex = new Random().nextInt(allEntities.size());
-
             // Get the randomly selected entity
             GoldEntity randomEntity = allEntities.get(randomIndex);
-
             // Add the entity to the model for rendering in the view
             model.addAttribute("randomEntity", randomEntity);
         }
-
         // Return the name of the Thymeleaf template
         return "goldKey";
     }
