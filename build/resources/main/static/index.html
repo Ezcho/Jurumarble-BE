@@ -53,7 +53,7 @@
     let statusDiv = document.getElementById('game-status');
     statusDiv.innerHTML = '';
     games.forEach(game => {
-      let gameInfo = `Game ID: ${game.gameId}, Stack: ${game.stack}, Client IP: ${game.clientIp}, Current Turn: ${game.turn}<br>`;
+      let gameInfo = `Game ID: ${game.gameId}, Stack: ${game.stack}, Client IP: ${game.clientIp}, Current Turn: ${game.turn}, Goal: ${game.goal}<br>`;
       gameInfo += '<ul>';
 
       game.teams.forEach(team => {
@@ -100,6 +100,7 @@ window.onload = loadGameStatus;
     } catch (error) {
       console.error("게임 생성 실패:", error);
     }
+    loadGameStatus();
   }
 
   async function updateTeam() {
@@ -138,13 +139,19 @@ window.onload = loadGameStatus;
     }
   }
   async function rollDice() {
-    loadGameStatus();
     const gameId = document.querySelector('#dice-game-id').value;
     const diceValue = document.querySelector('#dice-value').value;
 
     try {
-      let response = await fetch(`/api/v1/status/${gameId}/dice?value=${diceValue}`);
+      let response = await fetch(`/api/v1/status/${gameId}/dice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ value: diceValue })
+      });
       let result = await response.json();
+      console.log(result);
       let resultDiv = document.getElementById('dice-roll-result');
       resultDiv.innerHTML = `Team ID: ${result.id}, Name: ${result.name}, New Position: ${result.position}`;
     } catch (error) {

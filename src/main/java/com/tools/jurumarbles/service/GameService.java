@@ -32,12 +32,12 @@ public class GameService {
         repository.save(newGame);
         return newGame;
     }
-    public GameEntity getGameById(int id) {
-        return repository.findById(id).orElse(null);
+    public GameEntity getGameById(int gameId) {
+        return repository.findById(gameId).orElse(null);
     }
-    public GameEntity updateGame(int id, GameEntity game) {
-        if (repository.existsById(id)) {
-            game.setGameId(id);
+    public GameEntity updateGame(int gameId, GameEntity game) {
+        if (repository.existsById(gameId)) {
+            game.setGameId(gameId);
             return repository.save(game);
         }
         return null;
@@ -65,7 +65,6 @@ public class GameService {
             jdbcTemplate.update("UPDATE " + tableName + " SET name = ? WHERE id = ?", predefinedNames[i], predefinedIds[i]);
         }
     }
-
     /*
     스택관련 함수들, /api/v1/status/gameId/stack_push 혹은
     /api/v1/status/${gameId}/stack_pop 요청이 들어왔을 때 수행하는 함수
@@ -123,10 +122,19 @@ public class GameService {
                 .orElseGet(() -> teams.stream()
                         .min(Comparator.comparingInt(TeamEntity::getId))
                         .orElse(null));
+        System.out.println("현재 팀: "+ currentTeam);
         if (currentTeam != null) {
-            currentTeam.setPosition(currentTeam.getPosition() + diceValue);
-            int nextTurnIndex = (teams.indexOf(currentTeam) + 1) % teams.size();
-            game.setTurn(teams.get(nextTurnIndex).getId());
+            int currentPosition = currentTeam.getPosition() + diceValue;
+            if(currentPosition >=25){
+                currentTeam.setPosition(currentPosition-24);    //위치가 24초과면 1바퀴 돈걸로 간주하고, 24빼준다.
+                currentTeam.setNow(currentTeam.getNow()+1);     //now값 증가시켜준다.
+                if(currentTeam.getNow() == game.getGoal()){     //설정한 바퀴수를 다 돈 경우
+                    return endGame(gameId, currentTeam);        //endGame메서드 실행
+                }
+            }
+            currentTeam.setPosition(currentPosition);                               //일반적인 경우
+            int nextTurnIndex = (teams.indexOf(currentTeam) + 1) % teams.size();    //다음 순서 설정
+            game.setTurn(teams.get(nextTurnIndex).getId());                         //
             updateGame(gameId, game);
         }
         Map<String, Object> response = new HashMap<>();
@@ -156,6 +164,12 @@ public class GameService {
             deleteGameTable(game.getGameId());
         }
         repository.deleteByClientIp(clientIp);
+    }
+    public Map<String, Object> endGame(int gameId, TeamEntity currentTeam){
+        deleteGame(gameId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("wins: ", currentTeam.getName());
+        return response;
     }
 
 
