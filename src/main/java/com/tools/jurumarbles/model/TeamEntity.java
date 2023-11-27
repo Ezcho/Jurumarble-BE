@@ -1,9 +1,13 @@
 package com.tools.jurumarbles.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Setter
+@Getter
 public class TeamEntity {
 
     @Id
@@ -11,42 +15,27 @@ public class TeamEntity {
     private Integer id;
     private String name;
     private Integer position;
+    private Integer now = 0;
+    private Integer exemptionCard = 0;
 
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "game_id")
     private GameEntity game;
-
-
     public Integer getId() {
         return id;
     }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getPosition() {
-        return position;
-    }
-
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
     public GameEntity getGame() {
         return game;
     }
 
-    public void setGame(GameEntity game) {
-        this.game = game;
+    public void increaseExemptionCard() {
+        this.exemptionCard++;
     }
+
+    public void decreaseExemptionCard() {
+        this.exemptionCard--;
+    }
+
+
 }

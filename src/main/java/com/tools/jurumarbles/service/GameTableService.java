@@ -16,4 +16,8 @@ public class GameTableService {
         String tableName = "G" + gameId;
         return jdbcTemplate.queryForList("SELECT * FROM " + tableName);
     }
+    public List<Map<String, Object>> getGameTableDataDetail(int gameId, int id) {
+        String tableName = "G" + gameId;
+        return jdbcTemplate.queryForList("SELECT * FROM " + tableName+ "WHERE id ="+id);
+    }
 }

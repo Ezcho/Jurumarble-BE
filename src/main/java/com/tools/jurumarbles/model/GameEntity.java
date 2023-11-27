@@ -10,9 +10,16 @@ public class GameEntity {
     private Integer gameId;
     private String clientIp;
     private Integer stack;
-
+    private Integer goal;
+    private Integer turn;
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TeamEntity> teams;
+    public void setTeams(List<TeamEntity> teams) {
+        this.teams = teams;
+        for (TeamEntity team : teams) {
+            team.setGame(this);
+        }
+    }
 
     public Integer getGameId() {
         return gameId;
@@ -42,11 +49,8 @@ public class GameEntity {
         return teams;
     }
 
-    public void setTeams(List<TeamEntity> teams) {
-        this.teams = teams;
-        for (TeamEntity team : teams) {
-            team.setGame(this);
-        }
-    }
-
+    public void setTurn(Integer turn){this.turn = turn;}
+    public Integer getTurn(){return turn;}
+    public void setGoal(int goal) {this.goal = goal;}
+    public int getGoal(){return goal;}
 }
