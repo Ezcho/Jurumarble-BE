@@ -43,26 +43,9 @@ public class GameService {
         return null;
     }
 
-    public void deleteGame(int id) {
-        deleteGameTable(id);
-        repository.deleteById(id);
-    }
-
-    public void deleteByClientIp(String clientIp) {
-        List<GameEntity> games = repository.findByClientIp(clientIp);
-        for (GameEntity game : games) {
-            deleteGameTable(game.getGameId());
-        }
-        repository.deleteByClientIp(clientIp);
-    }
-
     private Integer generateRandomGameId() {
         Random rand = new Random();
         return 100_000 + rand.nextInt(900_000);
-    }
-    private void deleteGameTable(int gameId) {
-        String tableName = "G" + gameId;
-        jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
     }
 
     /*
@@ -113,13 +96,13 @@ public class GameService {
         }
         return response;
     }
-    public static int increaseExemptionCard(int gameId) {
-        GameEntity game = getGameById(gameId);
-        int currentStack = game.getStack();
-        game.setStack(currentStack + 1);
-        updateGame(gameId, game);
-        return game.getStack();
-    }
+//    public static int increaseExemptionCard(int gameId) {
+//        GameEntity game = getGameById(gameId);
+//        int currentStack = game.getStack();
+//        game.setStack(currentStack + 1);
+//        updateGame(gameId, game);
+//        return game.getStack();
+//    }
 
     /*
     rollDice 함수
@@ -154,5 +137,27 @@ public class GameService {
         }
         return response;
     }
+
+    /*
+        게임종료 deleteGame, deleteGameTable
+    */
+    public void deleteGame(int id) {
+        deleteGameTable(id);
+        repository.deleteById(id);
+    }
+    private void deleteGameTable(int gameId) {
+        String tableName = "G" + gameId;
+        jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
+    }
+    //얘는 ip기반 종료하는것,
+    public void deleteByClientIp(String clientIp) {
+        List<GameEntity> games = repository.findByClientIp(clientIp);
+        for (GameEntity game : games) {
+            deleteGameTable(game.getGameId());
+        }
+        repository.deleteByClientIp(clientIp);
+    }
+
+
 
 }
