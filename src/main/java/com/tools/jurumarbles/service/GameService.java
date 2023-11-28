@@ -116,18 +116,21 @@ public class GameService {
     public Map<String, Object> rollDice(int gameId, int diceValue) {
         GameEntity game = getGameById(gameId);
         List<TeamEntity> teams = game.getTeams();
+        //선언
         TeamEntity currentTeam = teams.stream()
                 .filter(team -> team.getId() == game.getTurn())
                 .findFirst()
                 .orElseGet(() -> teams.stream()
                         .min(Comparator.comparingInt(TeamEntity::getId))
                         .orElse(null));
+        //현재 팀을 찾는거고.
         System.out.println("현재 팀: "+ currentTeam);
         if (currentTeam != null) {
             int currentPosition = currentTeam.getPosition() + diceValue;
             if(currentPosition >=25){
-                currentTeam.setPosition(currentPosition-24);    //위치가 24초과면 1바퀴 돈걸로 간주하고, 24빼준다.
-                currentTeam.setNow(currentTeam.getNow()+1);     //now값 증가시켜준다.
+                currentPosition -= 24;
+                currentTeam.setPosition(currentPosition);    //위치가 24초과면 1바퀴 돈걸로 간주하고, 24빼준다.
+                currentTeam.setNow(currentTeam.getNow()+1);     //now값 증가시켜준다. //more할때는 얘를 없에자.
                 if(currentTeam.getNow() == game.getGoal()){     //설정한 바퀴수를 다 돈 경우
                     return endGame(gameId, currentTeam);        //endGame메서드 실행
                 }

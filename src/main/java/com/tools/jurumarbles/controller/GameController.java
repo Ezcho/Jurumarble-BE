@@ -32,6 +32,7 @@ public class GameController {
     public GameEntity getGameById(@PathVariable int id) {
         return service.getGameById(id);
     }
+
     @PostMapping("/start")  // 게임시작 request 처리
     public Map<String, Object> startGame(@RequestBody StartGameRequest request, HttpServletRequest httpRequest) {
         //DTO에서 goal과 팀 정보 추출
@@ -40,14 +41,14 @@ public class GameController {
                 .map(teamRequest -> {
                     TeamEntity team = new TeamEntity();
                     team.setName(teamRequest.getName());
-                    team.setPosition(0);
-                    team.setNow(0);
-//                    team.setSudo(0);
+                    team.setPosition(0);    //위치
+                    team.setNow(0);         //바퀴수
+//                  team.setSudo(0);
                     return team;
                 })
                 .collect(Collectors.toList());
         GameEntity game = service.startNewGame(goal, httpRequest.getRemoteAddr(), teams);
-        // 응답 생성
+        //
         Map<String, Object> response = new HashMap<>();
         response.put("gameId", game.getGameId());
         response.put("goal", game.getGoal());
@@ -67,26 +68,12 @@ public class GameController {
         response.put("stack", updatedStack);
         return response;
     }
-    @GetMapping("/{gameId}/stack_pop")//축척주 초기화
+    @GetMapping("/{gameId}/stack_pop")//축적주 제거
     public ResponseEntity<Map<String, Object>> resetStack(@PathVariable int gameId) {
         Map<String, Object> response = service.resetStack(gameId);
         return ResponseEntity.ok(response);
     }
-    // exemptionCard 증가
-//    @PostMapping("/{gameId}/excemption_push")
-//    public ResponseEntity <Map<String, Object>> increaseExemptionCard(@PathVariable int gameId) {
-//        int currentExemptionCard = GameService.increaseExemptionCard(gameId);
-//        Map<String, Integer> response = new HashMap<>();
-//        response.put("exception_card", );
-//        return response;
-//    }
 
-    // exemptionCard 감소
-//    @PostMapping("/{gameId}/{teamId}/excemption_pop")
-//    public ResponseEntity<?> decreaseExemptionCard(@PathVariable Long gameId, @PathVariable Long teamId) {
-//        GameService.decreaseExemptionCard(gameId, teamId);
-//        return ResponseEntity.ok().build();
-//    }
     @PostMapping("/end")//ip기반 겜종료
     public void endGame(HttpServletRequest request) {
         String clientIp = request.getRemoteAddr();
@@ -96,7 +83,6 @@ public class GameController {
     public void deleteGame(@PathVariable int id) {
         service.deleteGame(id);
     }
-
 
     @PutMapping("/{id}")//팀 생성 PUT 메서드 사용안하는중,
     public GameEntity updateGame(@PathVariable int id, @RequestBody GameEntity game) {
