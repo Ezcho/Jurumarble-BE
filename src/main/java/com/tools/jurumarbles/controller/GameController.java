@@ -73,6 +73,14 @@ public class GameController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{gameId}/excemption_push")  // 면제권 넣기
+    public ResponseEntity<Map<String, Object>> increaseExemptionCard(@PathVariable int gameId) {
+        int updatedExemptionCard = service.increaseExemptionCard(gameId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("excemptionCard", updatedExemptionCard);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/{gameId}/back") //황금열쇠 BACK
     public ResponseEntity<Map<String, Object>> goBack(@PathVariable int gameId) {
         Map<String, Object> response = service.goBack(gameId);
