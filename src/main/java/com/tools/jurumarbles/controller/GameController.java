@@ -41,7 +41,7 @@ public class GameController {
                 .map(teamRequest -> {
                     TeamEntity team = new TeamEntity();
                     team.setName(teamRequest.getName());
-                    team.setPosition(0);    //위치
+                    team.setPosition(1);    //위치
                     team.setNow(0);         //바퀴수
                     return team;
                 })
