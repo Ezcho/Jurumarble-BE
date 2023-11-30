@@ -160,6 +160,42 @@ public class GameService {
         String tableName = "G" + gameId;
         jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
     }
+
+    /*
+    황금열쇠 BACK 요청 들어왔을때 출발점으로 보내는 로직
+     */
+    public Map<String, Object> goBack(int gameId) {
+        GameEntity game = getGameById(gameId);
+        if (game == null) return Collections.emptyMap();
+        List<TeamEntity> teams = game.getTeams();
+        if (teams.isEmpty()) return Collections.emptyMap();
+
+        // 현재 턴의 팀을 찾음
+        TeamEntity currentTeam = teams.stream()
+                .filter(team -> team.getId() == game.getTurn())
+                .findFirst()
+                .orElse(null);
+
+        TeamEntity previousTeam = null;
+        if (currentTeam == null) {
+            // 턴이 설정되지 않았거나 찾을 수 없는 경우, 첫 번째 팀을 현재 팀으로 설정
+            currentTeam = teams.get(0);
+            game.setTurn(currentTeam.getId());
+        } else {
+            // 이전 팀으로 돌아가기
+            int currentIndex = teams.indexOf(currentTeam);
+            int previousIndex = (currentIndex - 1 + teams.size()) % teams.size();
+            previousTeam = teams.get(previousIndex);
+            game.setTurn(previousTeam.getId());
+            previousTeam.setPosition(1);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", game.getTurn());
+        response.put("position", previousTeam.getPosition());
+        return response;
+    }
+
     //얘는 ip기반 종료하는것,
     public void deleteByClientIp(String clientIp) {
         List<GameEntity> games = repository.findByClientIp(clientIp);

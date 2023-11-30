@@ -43,7 +43,6 @@ public class GameController {
                     team.setName(teamRequest.getName());
                     team.setPosition(0);    //위치
                     team.setNow(0);         //바퀴수
-//                  team.setSudo(0);
                     return team;
                 })
                 .collect(Collectors.toList());
@@ -71,6 +70,15 @@ public class GameController {
     @GetMapping("/{gameId}/stack_pop")//축적주 제거
     public ResponseEntity<Map<String, Object>> resetStack(@PathVariable int gameId) {
         Map<String, Object> response = service.resetStack(gameId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{gameId}/back") //황금열쇠 BACK
+    public ResponseEntity<Map<String, Object>> goBack(@PathVariable int gameId) {
+        Map<String, Object> response = service.goBack(gameId);
+        if (response.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(response);
     }
 
