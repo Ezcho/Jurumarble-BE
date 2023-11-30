@@ -57,12 +57,12 @@ public class GameService {
     public void createAndPopulateGameTable(int gameId) {
         String tableName = "G" + gameId;
         jdbcTemplate.execute("CREATE TABLE " + tableName + " (id INT AUTO_INCREMENT, name VARCHAR(255), PRIMARY KEY (id))");
-        String insertRandomNames = "INSERT INTO " + tableName + " (name) SELECT name FROM map_entity WHERE name NOT IN ('START', 'ISLAND', 'STACK_PUSH', 'STACK_POP', 'GOLDENKEY') ORDER BY RAND() LIMIT 24";
+        String insertRandomNames = "INSERT INTO " + tableName + " (name) SELECT name FROM map_entity WHERE name NOT IN ('START', 'ISLAND', 'STACK_PUSH', 'STACK_POP', 'GOLDENKEY') ORDER BY RAND() LIMIT 28";
         jdbcTemplate.execute(insertRandomNames);
         String[] predefinedNames = {"START", "ISLAND", "STACK_PUSH", "STACK_POP", "GOLDENKEY", "GOLDENKEY", "GOLDENKEY", "GOLDENKEY"};
-        int[] predefinedIds = {1, 7, 13, 19, 4, 10, 16, 22};
+        int[] predefinedIds = {1, 15, 8, 22, 4, 11, 18, 25};
         for (int i = 0; i < predefinedNames.length; i++) {
-            jdbcTemplate.update("UPDATE " + tableName + " SET name = ? WHERE id = ?", predefinedNames[i], predefinedIds[i]);
+            jdbcTemplate.update(    "UPDATE " + tableName + " SET name = ? WHERE id = ?", predefinedNames[i], predefinedIds[i]);
         }
     }
     /*

@@ -6,197 +6,42 @@
 </head>
 <body>
 <br>
-<h2>겜 CRUD</h2>
-<form id="start-game-form">
-  바퀴수: <input type="number" id="game-goal"><br>
-  <button type="button" onclick="startGame()">게임시작</button>
-</form>
-<h3>팀 추가</h3>
-<form id="team-update-form">
-  Game ID: <input type="text" id="game-id-update"><br>
-  Name: <textarea id="team-name"></textarea><br>
-  Position: <textarea id="team-position"></textarea><br>
-  <button type="button" onclick="updateTeam()">Update Team</button>
-</form>
+    <h2>겜 CRUD</h2>
+    <form id="start-game-form">
+      바퀴수: <input type="number" id="game-goal"><br>
+      <button type="button" onclick="startGame()">게임시작</button>
+    </form>
+    <h3>팀 추가</h3>
+    <form id="team-update-form">
+      Game ID: <input type="text" id="game-id-update"><br>
+      Name: <textarea id="team-name"></textarea><br>
+      Position: <textarea id="team-position"></textarea><br>
+      <button type="button" onclick="updateTeam()">Update Team</button>
+    </form>
+    <h3>게임의 상태</h3>
+    <div id="game-status"></div>
+    <h4>주사위 굴리기</h4>
+    <form id="dice-roll-form">
+      Game ID: <input type="text" id="dice-game-id"><br>
+      Dice Value: <input type="number" id="dice-value"><br>
+      <button type="button" onclick="rollDice()">주사위 굴리기</button>
+    </form>
+    <h4>축적주 누적</h4>
+    <form id="stack-push-form">
+      Game ID: <input type="text" id="stack-game-id"><br>
+      <button type="button" onclick="increaseStack()">Stack 증가</button>
+    </form>
+    <div id="stack-result"></div>
+    <h3>축적주 묵자</h3>
+    <form id="stack-pop-form">
+      Game ID: <input type="text" id="stack-pop-game-id"><br>
+      <button type="button" onclick="resetStackAndGetTurnInfo()">Stack 리셋, 턴 정보 가져오기</button>
+    </form>
+    <div id="stack-pop-result"></div>
 
-<h3>게임의 상태</h3>
-<div id="game-status"></div>
-
-<h4>주사위 굴리기</h4>
-<form id="dice-roll-form">
-  Game ID: <input type="text" id="dice-game-id"><br>
-  Dice Value: <input type="number" id="dice-value"><br>
-  <button type="button" onclick="rollDice()">주사위 굴리기</button>
-</form>
-
-<h4>축적주 누적</h4>
-<form id="stack-push-form">
-  Game ID: <input type="text" id="stack-game-id"><br>
-  <button type="button" onclick="increaseStack()">Stack 증가</button>
-</form>
-<div id="stack-result"></div>
-
-<h3>축적주 묵자</h3>
-<form id="stack-pop-form">
-  Game ID: <input type="text" id="stack-pop-game-id"><br>
-  <button type="button" onclick="resetStackAndGetTurnInfo()">Stack 리셋 및 턴 정보 가져오기</button>
-</form>
-<div id="stack-pop-result"></div>
-
-<button onclick="deleteGame()">겜종료(삭제, 현재는 ip기반)</button>
-
+    <button onclick="deleteGame()">겜종료(삭제, 현재는 ip기반)</button>
+</body>
 <script>
-  async function loadGameStatus() {
-  try {
-    let response = await fetch("/api/v1/status");
-    let games = await response.json();
-    let statusDiv = document.getElementById('game-status');
-    statusDiv.innerHTML = '';
-    games.forEach(game => {
-      let gameInfo = `Game ID: ${game.gameId}, Stack: ${game.stack}, Client IP: ${game.clientIp}, Current Turn: ${game.turn}, Goal: ${game.goal}<br>`;
-      gameInfo += '<ul>';
-
-      game.teams.forEach(team => {
-        let teamStatus = `Team ID: ${team.id}, Name: ${team.name}, Position: ${team.position} now: ${team.now}`;
-        if (team.id === game.turn) {
-          teamStatus += ' (Current Turn)';
-        }
-        gameInfo += `<li>${teamStatus}</li>`;
-      });
-      gameInfo += '</ul><br>';
-      statusDiv.innerHTML += gameInfo;
-    });
-  } catch (error) {
-    console.error("Error loading game status:", error);
-  }
-}
-window.onload = loadGameStatus;
-
-  async function startGame() {
-    const goalValue = document.querySelector('#game-goal').value;
-    const teamData = [
-      { name: "Team A" },
-      { name: "Team B" }
-    ];
-
-    if (!goalValue) {
-      alert('Goal 값을 입력해주세요.');
-      return;
-    }
-
-    try {
-      let startResponse = await fetch("/api/v1/status/start", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ goal: goalValue, teams: teamData })
-      });
-      let startData = await startResponse.json();
-      let gameId = startData.gameId;
-      document.querySelector('#game-id-update').value = gameId;
-      alert('Game started with Game ID: ' + gameId);
-    } catch (error) {
-      console.error("게임 생성 실패:", error);
-    }
-    loadGameStatus();
-  }
-
-  async function updateTeam() {
-    loadGameStatus();
-    const gameId = document.querySelector('#game-id-update').value;
-    const name = document.querySelector('#team-name').value;
-    const position = document.querySelector('#team-position').value;
-    try {
-      let response = await fetch("/api/v1/status/" + gameId);
-      let gameData = await response.json();
-      gameData.teams.push({
-        name: name,
-        position: position
-      });
-      await fetch("/api/v1/status/" + gameId, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(gameData)
-      });
-      alert('Team updated!');
-    } catch (error) {
-      console.error("Error updating team:", error);
-    }
-  }
-  async function deleteGame() {
-    loadGameStatus();
-    try {
-      await fetch("/api/v1/status/end", {
-        method: 'POST'
-      });
-      alert('Game deleted based on client IP!');
-    } catch (error) {
-      console.error("Error deleting game:", error);
-    }
-  }
-  async function rollDice() {
-    const gameId = document.querySelector('#dice-game-id').value;
-    const diceValue = document.querySelector('#dice-value').value;
-
-    try {
-      let response = await fetch(`/api/v1/status/${gameId}/dice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ value: diceValue })
-      });
-      let result = await response.json();
-      console.log(result);
-      let resultDiv = document.getElementById('dice-roll-result');
-      resultDiv.innerHTML = `Team ID: ${result.id}, Name: ${result.name}, New Position: ${result.position}`;
-    } catch (error) {
-      console.error("Error rolling dice:", error);
-    }
-
-    loadGameStatus(); // 게임 상태 갱신
-  }
-
-async function increaseStack() {
-  const gameId = document.querySelector('#stack-game-id').value;
-  if (!gameId) {
-    alert('Game ID 입력');
-    return;
-  }
-  try {
-    let response = await fetch(`/api/v1/status/${gameId}/stack_push`, { method: 'POST' });
-    let result = await response.json();
-    let stackDiv = document.getElementById('stack-result');
-    stackDiv.innerHTML = `Updated Stack: ${result.stack}`;
-  } catch (error) {
-    console.error("Error increasing stack:", error);
-  }
-
-  loadGameStatus();
-}
-async function resetStackAndGetTurnInfo() {
-  loadGameStatus();
-  const gameId = document.querySelector('#stack-pop-game-id').value;
-  if (!gameId) {
-    alert('Game ID를 입력해주세요.');
-    return;
-  }
-
-  try {
-    let response = await fetch(`/api/v1/status/${gameId}/stack_pop`, { method: 'GET' });
-    let result = await response.json();
-    let stackPopDiv = document.getElementById('stack-pop-result');
-    stackPopDiv.innerHTML = `Stack Reset to: 0 <br> Current Turn - Team ID: ${result.id}, Name: ${result.name}`;
-  } catch (error) {
-    console.error("Error resetting stack and getting turn info:", error);
-  }
-
-  loadGameStatus(); // 게임 상태 갱신
-}
 
 </script>
-</body>
 </html>
