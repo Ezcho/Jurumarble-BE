@@ -115,7 +115,7 @@ public class GameService {
             updateGame(gameId, game);
             return currentTeam.getExemptionCard();
         }
-        return 0;  // Return 0 or handle as appropriate if the team is not found
+        return 0;
     }
 
 
@@ -202,12 +202,11 @@ public class GameService {
             int currentIndex = teams.indexOf(currentTeam);
             int previousIndex = (currentIndex - 1 + teams.size()) % teams.size();
             previousTeam = teams.get(previousIndex);
-
             previousTeam.setPosition(1);
         }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("id", game.getTurn());
+        response.put("id", previousTeam.getId());
         response.put("position", previousTeam.getPosition());
         return response;
     }
