@@ -143,8 +143,8 @@ public class GameService {
         System.out.println("현재 팀: "+ currentTeam);
         if (currentTeam != null) {
             int currentPosition = currentTeam.getPosition() + diceValue;
-            if(currentPosition >=25){
-                currentPosition -= 24;
+            if(currentPosition >=28){
+                currentPosition -= 28;
                 currentTeam.setPosition(currentPosition);    //위치가 24초과면 1바퀴 돈걸로 간주하고, 24빼준다.
                 currentTeam.setNow(currentTeam.getNow()+1);     //now값 증가시켜준다. //more할때는 얘를 없에자.
                 if(currentTeam.getNow() == game.getGoal()){     //설정한 바퀴수를 다 돈 경우
@@ -198,11 +198,11 @@ public class GameService {
             currentTeam = teams.get(0);
             game.setTurn(currentTeam.getId());
         } else {
-            // 이전 팀으로 돌아가기
+
             int currentIndex = teams.indexOf(currentTeam);
             int previousIndex = (currentIndex - 1 + teams.size()) % teams.size();
             previousTeam = teams.get(previousIndex);
-            game.setTurn(previousTeam.getId());
+
             previousTeam.setPosition(1);
         }
 
@@ -226,7 +226,4 @@ public class GameService {
         response.put("wins: ", currentTeam.getName());
         return response;
     }
-
-
-
 }
