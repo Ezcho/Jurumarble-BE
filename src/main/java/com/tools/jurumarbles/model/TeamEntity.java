@@ -29,6 +29,8 @@ public class TeamEntity {
         return game;
     }
 
+    public Integer getExemptionCard(){ return exemptionCard; }
+
     public void increaseExemptionCard() {
         this.exemptionCard++;
     }
@@ -36,6 +38,4 @@ public class TeamEntity {
     public void decreaseExemptionCard() {
         this.exemptionCard--;
     }
-
-
 }

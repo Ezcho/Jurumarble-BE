@@ -103,6 +103,22 @@ public class GameService {
 //        return game.getStack();
 //    }
 
+    public int increaseExemptionCard(int gameId) {
+        GameEntity game = getGameById(gameId);
+        List<TeamEntity> teams = game.getTeams();
+        TeamEntity currentTeam = teams.stream()
+                .filter(team -> Objects.equals(team.getId(), game.getTurn()))
+                .findFirst()
+                .orElse(null);
+        if (currentTeam != null) {
+            currentTeam.increaseExemptionCard();  // Call the method in TeamEntity to increase the exemption card count
+            updateGame(gameId, game);
+            return currentTeam.getExemptionCard();
+        }
+        return 0;  // Return 0 or handle as appropriate if the team is not found
+    }
+
+
     /*
     rollDice 함수
     최초value로 첫번째 팀의 id를 설정한다음,
