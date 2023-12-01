@@ -117,42 +117,42 @@ public class GameService {
         }
         return 0;
     }
-
-    public Map<String, Object> decreaseExemptionCard(int gameId) {
-        GameEntity game = getGameById(gameId);  // 게임 ID로부터 게임 정보를 가져옴
-        List<TeamEntity> teams = game.getTeams();  // 게임에 참여 중인 모든 팀 정보를 가져옴
-        TeamEntity currentTeam = teams.stream()
-                .filter(team -> Objects.equals(team.getId(), game.getTurn()))
-                .findFirst()
-                .orElse(null);  // 현재 턴에 있는 팀을 찾음
-        Map<String, Object> response = new HashMap<>();  // 응답을 담을 Map
-        if (currentTeam != null) {
-            int exemptionCardCount = currentTeam.getExemptionCard();// 현재 팀의 면제권 개수를 가져옴
-            List<Integer> numbers = List.of(1, 15, 8, 4, 11, 18, 25)
-            // 현재 팀이 어떤 칸에 있는지 확인
-            boolean isPredefinedCell = numbers.contains(currentTeam.getPosition());
-            // predefined가 아닌 경우에만 면제권 사용
-            if (!isPredefinedCell) {
-                // 만약 면제권이 남아 있으면 사용 가능
-                if (exemptionCardCount > 0) {
-                    currentTeam.decreaseExemptionCard();  // TeamEntity에서 면제권 감소 메서드 호출
-                    response.put("success", true);
-                    response.put("exemptionCard", currentTeam.getExemptionCard());
-                    updateGame(gameId, game);  // 게임 정보 업데이트
-                } else {
-                    response.put("success", false);
-                    response.put("message", "면제권이 부족합니다.");
-                }
-            } else {
-                response.put("success", false);
-                response.put("message", "면제권을 사용할 수 없는 칸입니다.");
-            }
-        } else {
-            response.put("success", false);
-            response.put("message", "팀을 찾을 수 없습니다.");
-        }
-        return response;  // 면제권 사용 결과를 담은 응답을 반환
-    }
+//
+//    public Map<String, Object> decreaseExemptionCard(int gameId) {
+//        GameEntity game = getGameById(gameId);  // 게임 ID로부터 게임 정보를 가져옴
+//        List<TeamEntity> teams = game.getTeams();  // 게임에 참여 중인 모든 팀 정보를 가져옴
+//        TeamEntity currentTeam = teams.stream()
+//                .filter(team -> Objects.equals(team.getId(), game.getTurn()))
+//                .findFirst()
+//                .orElse(null);  // 현재 턴에 있는 팀을 찾음
+//        Map<String, Object> response = new HashMap<>();  // 응답을 담을 Map
+//        if (currentTeam != null) {
+//            int exemptionCardCount = currentTeam.getExemptionCard();// 현재 팀의 면제권 개수를 가져옴
+//            List<Integer> numbers = List.of(1, 15, 8, 4, 11, 18, 25)
+//            // 현재 팀이 어떤 칸에 있는지 확인
+//            boolean isPredefinedCell = numbers.contains(currentTeam.getPosition());
+//            // predefined가 아닌 경우에만 면제권 사용
+//            if (!isPredefinedCell) {
+//                // 만약 면제권이 남아 있으면 사용 가능
+//                if (exemptionCardCount > 0) {
+//                    currentTeam.decreaseExemptionCard();  // TeamEntity에서 면제권 감소 메서드 호출
+//                    response.put("success", true);
+//                    response.put("exemptionCard", currentTeam.getExemptionCard());
+//                    updateGame(gameId, game);  // 게임 정보 업데이트
+//                } else {
+//                    response.put("success", false);
+//                    response.put("message", "면제권이 부족합니다.");
+//                }
+//            } else {
+//                response.put("success", false);
+//                response.put("message", "면제권을 사용할 수 없는 칸입니다.");
+//            }
+//        } else {
+//            response.put("success", false);
+//            response.put("message", "팀을 찾을 수 없습니다.");
+//        }
+//        return response;  // 면제권 사용 결과를 담은 응답을 반환
+//    }
 
 
     /*

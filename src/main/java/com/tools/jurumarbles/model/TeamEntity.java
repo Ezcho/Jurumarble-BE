@@ -28,16 +28,12 @@ public class TeamEntity {
     public GameEntity getGame() {
         return game;
     }
-
     public Integer getExemptionCard(){ return exemptionCard; }
-
     public void increaseExemptionCard() {
         this.exemptionCard++;
     }
-
     public void decreaseExemptionCard() {
         this.exemptionCard--;
     }
-
     public Integer getPosition() { return position; }
 }
