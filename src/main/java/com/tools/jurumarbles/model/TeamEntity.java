@@ -38,4 +38,6 @@ public class TeamEntity {
     public void decreaseExemptionCard() {
         this.exemptionCard--;
     }
+
+    public Integer getPosition() { return position; }
 }
